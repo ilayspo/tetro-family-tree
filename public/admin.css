@@ -35,3 +35,4 @@
 .dialog-actions{display:flex;gap:8px;flex-wrap:wrap}
 #status:not(:empty){background:#fff0df;color:#703c27}
 @media(max-width:700px){.admin-main{padding-bottom:180px}.admin-layout{grid-template-columns:1fr}.admin-list{max-height:145px}.admin-toolbar{flex-wrap:wrap}#profile-fields{grid-template-columns:1fr}.relation-card .person-picker{grid-template-columns:1fr}.save-bar{padding:12px}.save-bar span{width:100%}.save-bar button{flex:1;min-width:110px}}
+.admin-main #status:not(:empty){background:#fff0df;color:#703c27}

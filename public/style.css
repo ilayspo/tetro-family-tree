@@ -17,3 +17,23 @@ main{max-width:1250px;margin:auto;padding:34px 24px 40px}.intro{display:flex;jus
 .view-mode-heading{padding:11px 26px 6px;color:#678086;font-size:.78rem;font-weight:700;border-top:1px solid #e6eeeb}.view-switch{padding:0 26px;gap:0;border-bottom:1px solid #d8e4e3;overflow:visible}.view-tab{position:relative;flex:0 1 auto;min-width:170px;border:0;border-radius:11px 11px 0 0;background:transparent;color:#607b83;padding:12px 18px 13px;display:flex;justify-content:center;align-items:center;gap:8px;font-weight:600}.view-tab:hover{background:#f4f8f6}.view-tab[aria-selected="true"]{background:#fff;border:1px solid #d8e4e3;border-bottom-color:#fff;color:#173d53;font-weight:800;margin-bottom:-1px;box-shadow:inset 0 3px #caa261}.tab-glyph{font-size:1.13rem;line-height:1}.family-icon{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;flex:none;color:#3b7780}.family-icon svg{width:100%;height:100%}.relation-icon{width:26px;height:26px;padding:3px}.memorial-badge{position:absolute;inset-inline-end:5px;top:4px;width:15px;height:15px;color:#94765a}.person{padding-inline-end:20px}.relative-card{padding-inline-end:26px}.person-dates{clear:both;display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;color:#56737b;font-size:.76rem}.person-dates span{display:inline-flex;align-items:center}.memory-label{display:inline-flex;align-items:center;gap:4px}.memory-label .family-icon{width:15px;height:15px;color:#94765a}.status-badge{position:absolute;inset-inline-end:8px;top:8px;width:17px;height:17px;color:#9b7663}.relative-card .status-badge+.memorial-badge{top:28px}.relative-card{position:relative}
 @media(max-width:650px){.view-mode-heading{padding:9px 12px 4px}.view-switch{padding:0 12px}.view-tab{min-width:0;flex:1;padding:10px 4px 12px;gap:3px;flex-direction:column;font-size:.78rem}.tab-glyph{font-size:1rem}.person-dates{font-size:.72rem}}
 .root-pair{margin:1rem auto 0;max-width:24rem}.root-pair .relative-card{width:100%;text-align:right}.root-pair .hero-kicker{display:block;margin-bottom:.5rem}
+/* Warm Tetro palette */
+:root{color:#263744;background:#fff8ef}
+body{background:#fff8ef;color:#263744}
+.topbar{background:#963f22;border-bottom-color:#d47742}
+.brand-mark{border-color:#ffdc9c;color:#fff0d0}
+.header-label{color:#ffeadb}
+.eyebrow{color:#a94720}
+.intro-copy,.focus-label{color:#5c6e70}
+.counter{background:#fff0df;border-right-color:#bd5628}
+.workspace{border-color:#ecd9c8;box-shadow:0 14px 42px rgba(99,51,25,.08)}
+.search-wrap input:focus,.admin-main input:focus,.admin-main select:focus,.admin-main textarea:focus{outline:2px solid #a94720;outline-offset:1px}
+.reset-button:hover,.person:hover,.result:hover,.result:focus{background:#fff0df;border-color:#d47742}
+.focus-bar{background:#fff1e5;border-color:#f1decc}
+.view-tab[aria-selected="true"]{color:#813b20;box-shadow:inset 0 3px #bd5628;border-color:#ead7c5;border-bottom-color:#fffdf9;background:#fffdf9}
+.view-tab:hover,.branch-trigger:hover{background:#fff1e4}
+.view-switch{border-bottom-color:#ead7c5}
+.family-icon,.relation-icon{color:#276b68}
+.hero-kicker,.generation-label,.relation-heading{color:#a94720}
+.person:hover,.relative-card:hover{border-color:#c96b38;background:#fff9f2}
+.language-switch button[aria-pressed="true"],.zoom-controls button:hover{background:#a94720;color:white}

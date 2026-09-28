@@ -5,7 +5,7 @@ import { remove } from '../../../lib/storage';
 import {createInvitation,setGuardianGrant} from '../../../lib/members';
 import {queueNotification,deliverNotification} from '../../../lib/notifications';
 export const dynamic='force-dynamic';
-const fail=e=>{console.error(e);return Response.json({error:e.status?e.message:'אירעה שגיאה בשמירה. נסו שוב.'},{status:e.status||500,headers:{'Cache-Control':'no-store'}});};
+const fail=e=>{if(!e.status||e.status>=500)console.error(e);return Response.json({error:e.status?e.message:'אירעה שגיאה בשמירה. נסו שוב.'},{status:e.status||500,headers:{'Cache-Control':'no-store'}});};
 export async function GET(){try{await requireAdmin();const [p,u,m,a,g,i,audit]=await Promise.all([
  query('select id,name_he,birth_date,death_date,deceased,photo_key,is_visible,updated_at,admin_note,gender,about_me,hobbies,workplace,favorite_food,interesting_story from people order by name_he'),
  query('select * from family_units'),query('select * from family_members'),

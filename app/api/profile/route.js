@@ -4,7 +4,7 @@ import {updateEditableProfile} from '../../../lib/profile';
 import {deliverNotification} from '../../../lib/notifications';
 
 export const dynamic='force-dynamic';
-const fail=error=>{console.error(error);return Response.json({error:error.status?error.message:'אירעה שגיאה. נסו שוב.'},{status:error.status||500,headers:{'Cache-Control':'no-store'}});};
+const fail=error=>{if(!error.status||error.status>=500)console.error(error);return Response.json({error:error.status?error.message:'אירעה שגיאה. נסו שוב.'},{status:error.status||500,headers:{'Cache-Control':'no-store'}});};
 const sameOrigin=request=>{const origin=request.headers.get('origin');return !origin||new URL(origin).host===new URL(request.url).host;};
 
 export async function GET(){

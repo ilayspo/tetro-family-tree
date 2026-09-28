@@ -1,0 +1,1 @@
+window.loadFamilyData = async function(){try{const r=await fetch('/api/tree',{cache:'no-store'});if(!r.ok)throw Error('unavailable');return await r.json();}catch(e){console.error(e);return {people:[],families:[],rootIds:[]};}};

@@ -3,12 +3,9 @@
   if (!data || !Array.isArray(data.people) || !data.people.length) { document.getElementById('person-count').textContent = '—'; document.getElementById('focus-name').textContent = 'הנתונים אינם זמינים כרגע. נסו לרענן את העמוד.'; return; }
 
   const people = new Map(data.people.map(person => [person.id, person]));
-  let language = 'he';
-  const labels = {
-    he: { brand:'משפחת טטרו', treeTitle:'עץ המשפחה של משפחת טטרו', story:'הסיפור שלנו, בין הדורות', intro:'מכירים את המשפחה, אדם אחרי אדם.', count:'בני משפחה בעץ', search:'מחפשים מישהו במשפחה?', placeholder:'הקלידו שם פרטי או משפחה', reset:'חזרה לראש העץ', card:'כרטיס משפחתי', branches:'ענפי המשפחה', diagram:'תרשים העץ', viewing:'מסתכלים על', hint:'לחצו על שם כדי לעבור לענף שלו. אפשר לגלול או להגדיל בתוך התרשים.', footer:'מכירים קשר שצריך לתקן? ספרו לעילאי כדי שנעדכן את העץ.', admin:'ניהול', grandparents:'דור הסבים והסבתות', parentsGeneration:'דור ההורים', central:'במרכז המשפחה · קשרים ואחים', childrenGeneration:'דור הילדים', grandchildren:'דור הנכדים', focus:'במרכז העץ', memory:'לזכרו/ה', partner:'קשר הורי/זוגי', explore:'למעבר לענף', viewFamily:'לצפייה במשפחה', familyOf:'המשפחה של', parents:'הורים', partners:'זוגיות והורות משותפת', siblings:'אחים ואחיות', children:'ילדים', noRelations:'אין עדיין קשרים נוספים לאדם הזה בעץ.', back:'→ חזרה אל ', fromFamily:'יוצאים מהמשפחה של', chooseBranch:'בחרו ענף, ואז אדם להמשך המסע.', branchOf:'הענף של ', previous:'הדור הקודם והמשפחה שלו', familyWith:'המשפחה עם ', shared:'בן/בת זוג והילדים המשותפים', next:'הדור הבא', nextDescription:'ילדים והמשך המשפחה', siblingsDescription:'המשפחות שצמחו מאותו דור', noBranches:'אין עדיין ענפים נוספים לאדם הזה בעץ. אפשר לחפש מישהו אחר למעלה.', notFound:'לא מצאנו שם כזה בעץ', zoomIn:'הגדלה', zoomOut:'הקטנה', zoomReset:'איפוס תצוגה', relation:'קשר משפחתי', birth:'נולד/ה', death:'נפטר/ה', notKnown:'לא צוין', current:'קשר נוכחי', past:'קשר קודם', married:'נשואים', partnered:'בני זוג', divorced:'גרושים', separated:'פרודים', former:'קשר קודם', unknown:'סוג קשר לא ידוע', viewsLabel:'איך להציג את המשפחה?' }
-  };
-  const t = key => labels[language][key];
-  const nameOf = id => people.get(id)?.['name_' + language] || people.get(id)?.name_he || '';
+  const labels = { brand:'משפחת טטרו', treeTitle:'עץ המשפחה של משפחת טטרו', story:'הסיפור שלנו, בין הדורות', intro:'מכירים את המשפחה, אדם אחרי אדם.', count:'בני משפחה בעץ', search:'מחפשים מישהו במשפחה?', placeholder:'הקלידו שם פרטי או משפחה', reset:'חזרה לראש העץ', card:'כרטיס משפחתי', branches:'ענפי המשפחה', diagram:'תרשים העץ', viewing:'מסתכלים על', hint:'לחצו על שם כדי לעבור לענף שלו. אפשר לגלול או להגדיל בתוך התרשים.', footer:'מכירים קשר שצריך לתקן? ספרו לעילאי כדי שנעדכן את העץ.', admin:'ניהול', grandparents:'דור הסבים והסבתות', parentsGeneration:'דור ההורים', central:'במרכז המשפחה · קשרים ואחים', childrenGeneration:'דור הילדים', grandchildren:'דור הנכדים', focus:'במרכז העץ', memory:'לזכרו/ה', partner:'קשר הורי/זוגי', explore:'למעבר לענף', viewFamily:'לצפייה במשפחה', familyOf:'המשפחה של', parents:'הורים', partners:'זוגיות והורות משותפת', siblings:'אחים ואחיות', children:'ילדים', noRelations:'אין עדיין קשרים נוספים לאדם הזה בעץ.', back:'→ חזרה אל ', fromFamily:'יוצאים מהמשפחה של', chooseBranch:'בחרו ענף, ואז אדם להמשך המסע.', branchOf:'הענף של ', previous:'הדור הקודם והמשפחה שלו', familyWith:'המשפחה עם ', shared:'בן/בת זוג והילדים המשותפים', next:'הדור הבא', nextDescription:'ילדים והמשך המשפחה', siblingsDescription:'המשפחות שצמחו מאותו דור', noBranches:'אין עדיין ענפים נוספים לאדם הזה בעץ. אפשר לחפש מישהו אחר למעלה.', notFound:'לא מצאנו שם כזה בעץ', zoomIn:'הגדלה', zoomOut:'הקטנה', zoomReset:'איפוס תצוגה', relation:'קשר משפחתי', birth:'נולד/ה', death:'נפטר/ה', notKnown:'לא צוין', current:'קשר נוכחי', past:'קשר קודם', married:'נשואים', partnered:'בני זוג', divorced:'גרושים', separated:'פרודים', former:'קשר קודם', unknown:'סוג קשר לא ידוע', viewsLabel:'איך להציג את המשפחה?' };
+  const t = key => labels[key];
+  const nameOf = id => people.get(id)?.name_he || '';
   const photo = (id, size='small') => {
     const person = people.get(id);
     const node = document.createElement('span'); node.className = 'avatar avatar-' + size;
@@ -63,7 +60,7 @@
   document.getElementById('person-count').textContent = data.people.length;
 
   const unique = ids => [...new Set(ids)].filter(id => people.has(id));
-  const sort = ids => unique(ids).sort((a, b) => nameOf(a).localeCompare(nameOf(b), language));
+  const sort = ids => unique(ids).sort((a, b) => nameOf(a).localeCompare(nameOf(b), 'he'));
   const ownFamilies = id => families.filter(family => family.parents.includes(id));
   const originFamilies = id => families.filter(family => family.children.includes(id));
   const parents = id => unique(originFamilies(id).flatMap(family => family.parents));
@@ -175,7 +172,7 @@
     button.type = 'button';
     const name = element('strong', '', nameOf(id));
     const meta = element('span', 'relative-meta', subtitle || (people.get(id).deceased ? t('memory') : t('viewFamily')));
-    button.append(photo(id), name, meta, element('span', 'relative-arrow', language === 'he' ? '←' : '→'));
+    button.append(photo(id), name, meta, element('span', 'relative-arrow', '←'));
     if (people.get(id).deceased) button.append(icon('memorial','memorial-badge'));
     button.addEventListener('click', () => select(id, true, true));
     return button;
@@ -223,6 +220,9 @@
     hero.append(dates);
     if (data.rootIds.includes(id)) { const other=data.rootIds.find(value=>value!==id && people.has(value)); if(other){const rootPair=element('div','root-pair');rootPair.append(element('span','hero-kicker','זוג ראש העץ'),personButton(other,statusText(statusOf(id,other))));hero.append(rootPair);} }
     cardView.append(hero);
+    const personal=element('section','profile-story');
+    const details=[['על עצמי',people.get(id).about_me],['תחביבים',people.get(id).hobbies],['מקום עבודה',people.get(id).workplace],['אוכל מועדף',people.get(id).favorite_food],['סיפור מעניין',people.get(id).interesting_story]].filter(([,value])=>value);
+    if(details.length){personal.append(element('h3','','קצת עליי'));for(const [title,value] of details){const item=element('div','profile-story-item');item.append(element('strong','',title),element('p','',value));personal.append(item)}cardView.append(personal);}
     const relations = element('div', 'relations-grid');
     for (const group of [
       section(t('parents'), parents(id)),
@@ -343,20 +343,13 @@
     search.setAttribute('aria-expanded', 'true');
   }
 
-  const langButtons = document.querySelectorAll('[data-language]');
-  function applyLanguage() {
-    document.documentElement.lang = language;
-    document.documentElement.dir = language === 'he' ? 'rtl' : 'ltr';
+  function applyLabels() {
     document.title = t('treeTitle') + ' · ' + t('brand');
     for (const node of document.querySelectorAll('[data-i18n]')) node.textContent = t(node.dataset.i18n);
     for (const id of ['zoom-in','zoom-out','zoom-reset']) document.getElementById(id).setAttribute('aria-label', t(({ 'zoom-in':'zoomIn','zoom-out':'zoomOut','zoom-reset':'zoomReset' })[id]));
     search.placeholder = t('placeholder');
-    for (const button of langButtons) button.setAttribute('aria-pressed', String(button.dataset.language === language));
     render(); updateResults();
   }
-  for (const button of langButtons) button.addEventListener('click', () => {
-    language = button.dataset.language; localStorage.setItem('family-language', language); applyLanguage();
-  });
   let zoom = 1;
   const zoomLayer = document.getElementById('tree-zoom');
   function setZoom(value) {
@@ -394,5 +387,5 @@
   window.addEventListener('resize', () => { if (activeView === 'tree') drawLines(); });
   window.addEventListener('hashchange', () => select(decodeURIComponent(location.hash.slice(1)), false));
   select(people.has(decodeURIComponent(location.hash.slice(1))) ? decodeURIComponent(location.hash.slice(1)) : initialId, false);
-  applyLanguage();
+  applyLabels();
 })();

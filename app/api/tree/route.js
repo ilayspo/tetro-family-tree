@@ -3,7 +3,7 @@ export const dynamic='force-dynamic';
 export async function GET(){
  try {
   const [p,u,m]=await Promise.all([
-   query('select id,name_he,name_ru,birth_date,death_date,deceased,photo_key from people where is_visible=true and name_he is not null order by name_he'),
+   query('select id,name_he,birth_date,death_date,deceased,gender,photo_key,about_me,hobbies,workplace,favorite_food,interesting_story from people where is_visible=true and name_he is not null order by name_he'),
    query('select id,relationship_status,is_current from family_units'),
    query(`select m.unit_id,m.person_id,m.role from family_members m join people p on p.id=m.person_id where p.is_visible=true`)
   ]);

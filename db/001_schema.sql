@@ -2,7 +2,7 @@
 create extension if not exists pgcrypto;
 create table if not exists people (
  id text primary key, name_he text not null check (length(trim(name_he)) between 2 and 180),
- name_ru text, birth_date text, death_date text, deceased boolean,
+ birth_date text, death_date text, deceased boolean,
  photo_key text, is_visible boolean not null default false,
  updated_at timestamptz not null default now(),
  constraint birth_format check (birth_date is null or birth_date ~ '^[0-9]{4}(-[0-9]{2}(-[0-9]{2})?)?$'),

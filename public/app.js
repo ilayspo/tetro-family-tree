@@ -36,7 +36,10 @@
   const statusText = family => {
     if (!family) return t('unknown');
     const label=t(family.relationship_status||'unknown');
-    return family.is_current===null || family.is_current===undefined ? label : `${label} · ${t(family.is_current?'current':'past')}`;
+    if (family.relationship_status && family.relationship_status !== 'unknown') return label;
+    if (family.is_current === true) return t('current');
+    if (family.is_current === false) return t('past');
+    return label;
   };
   const statusIcon = family => ['divorced','separated','former'].includes(family?.relationship_status) ? 'divorced' : ['married','partnered'].includes(family?.relationship_status) ? 'partner' : 'parents';
 

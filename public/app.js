@@ -6,9 +6,13 @@
   const labels = { brand:'משפחת טטרו', treeTitle:'עץ המשפחה של משפחת טטרו', story:'הסיפור שלנו, בין הדורות', intro:'מכירים את המשפחה, אדם אחרי אדם.', count:'בני משפחה בעץ', search:'מחפשים מישהו במשפחה?', placeholder:'הקלידו שם פרטי או משפחה', reset:'חזרה לראש העץ', card:'כרטיס משפחתי', branches:'ענפי המשפחה', diagram:'תרשים העץ', viewing:'מסתכלים על', hint:'התרשים מציג את הדורות ביחס לציפורה ומיכאל. אפשר לגלול או להגדיל בתוך התרשים בלבד.', footer:'מכירים קשר שצריך לתקן? ספרו לעילאי כדי שנעדכן את העץ.', admin:'ניהול', focus:'במרכז העץ', memory:'לזכרו/ה', partner:'קשר הורי/זוגי', explore:'למעבר לענף', viewFamily:'לצפייה במשפחה', familyOf:'המשפחה של', parents:'הורים', partners:'זוגיות והורות משותפת', siblings:'אחים ואחיות', children:'ילדים', noRelations:'אין עדיין קשרים נוספים לאדם הזה בעץ.', fromFamily:'הענף המשפחתי של', chooseBranch:'כל זוג מוצג עם הילדים המשותפים שלו. בחרו אדם כדי להמשיך לדור הבא.', shared:'ילדים משותפים', noBranches:'אין לאדם הזה ילדים או ענף נוסף בעץ.', notFound:'לא מצאנו שם כזה בעץ', zoomIn:'הגדלה', zoomOut:'הקטנה', zoomReset:'איפוס תצוגה', relation:'קשר משפחתי', birth:'נולד/ה', death:'נפטר/ה', notKnown:'לא צוין', current:'קשר נוכחי', past:'קשר קודם', married:'נשואים', partnered:'בני זוג', divorced:'גרושים', separated:'פרודים', former:'קשר קודם', unknown:'סוג קשר לא ידוע', viewsLabel:'איך להציג את המשפחה?' };
   const t = key => labels[key];
   const nameOf = id => people.get(id)?.name_he || '';
-  const photo = (id, size='small') => {
+  const photoDialog=document.createElement('dialog');photoDialog.className='photo-lightbox';photoDialog.innerHTML='<button type="button" class="photo-lightbox-close" aria-label="סגירת התמונה">×</button><img alt=""><p></p>';document.body.append(photoDialog);
+  const closePhoto=()=>photoDialog.close();photoDialog.querySelector('button').addEventListener('click',closePhoto);photoDialog.addEventListener('click',event=>{if(event.target===photoDialog)closePhoto()});
+  const openPhoto=id=>{const image=photoDialog.querySelector('img');image.src=people.get(id).photo_url;image.alt='תמונה של '+nameOf(id);photoDialog.querySelector('p').textContent=nameOf(id);photoDialog.showModal();};
+  const photo = (id, size='small', interactive=false) => {
     const person = people.get(id);
-    const node = document.createElement('span'); node.className = 'avatar avatar-' + size;
+    const node = document.createElement(interactive&&person.photo_url?'button':'span'); node.className = 'avatar avatar-' + size;
+    if(node.tagName==='BUTTON'){node.type='button';node.classList.add('avatar-action');node.setAttribute('aria-label','פתיחת התמונה של '+nameOf(id));node.addEventListener('click',event=>{event.stopPropagation();openPhoto(id)});}
     if (person.photo_url) { const image = document.createElement('img'); image.src = person.photo_url; image.alt = ''; image.loading = 'lazy'; node.append(image); }
     else { node.textContent = nameOf(id).trim().charAt(0) || '•'; node.setAttribute('aria-hidden','true'); }
     return node;
@@ -17,7 +21,11 @@
   const icons = {
     parents:'<circle cx="8" cy="7" r="2.3"/><circle cx="16" cy="7" r="2.3"/><path d="M3 19v-3a5 5 0 0 1 10 0v3M11 19v-3a5 5 0 0 1 10 0v3"/>',
     children:'<circle cx="12" cy="6" r="2.5"/><path d="M7 21v-5a5 5 0 0 1 10 0v5M4 13l3-2m13 2-3-2"/>',
-    partner:'<circle cx="9" cy="12" r="5"/><circle cx="15" cy="12" r="5"/>',
+    partner:'<path d="M7 12.5 10.5 16 17 8.5"/><circle cx="7" cy="8" r="3.5"/><circle cx="17" cy="15" r="3.5"/>',
+    rings:'<circle cx="9" cy="12" r="5"/><circle cx="15" cy="12" r="5"/><path d="m17 4 .6 1.8L19.5 6.5l-1.9.7L17 9l-.6-1.8-1.9-.7 1.9-.7L17 4Z"/>',
+    male:'<circle cx="10" cy="14" r="5"/><path d="m14 10 6-6m-4 0h4v4"/>',
+    female:'<circle cx="12" cy="9" r="5"/><path d="M12 14v7m-3-3h6"/>',
+    person:'<circle cx="12" cy="8" r="3"/><path d="M6 21v-4a6 6 0 0 1 12 0v4"/>',
     divorced:'<path d="M3 15a5 5 0 0 0 8-7M14 8a5 5 0 0 1 7 7M11 4l2 16"/>',
     memorial:'<path d="M8 20h8M9 17h6v3H9zM12 5c-2 3-1 4 0 5 1-1 2-2 0-5ZM12 10v7"/>',
     siblings:'<path d="M4 20v-3a4 4 0 0 1 8 0v3m0 0v-3a4 4 0 0 1 8 0v3"/><circle cx="8" cy="8" r="2.5"/><circle cx="16" cy="8" r="2.5"/>'
@@ -41,7 +49,7 @@
     if (family.is_current === false) return t('past');
     return label;
   };
-  const statusIcon = family => ['divorced','separated','former'].includes(family?.relationship_status) ? 'divorced' : ['married','partnered'].includes(family?.relationship_status) ? 'partner' : 'parents';
+  const statusIcon = family => ['divorced','separated','former'].includes(family?.relationship_status) ? 'divorced' : family?.relationship_status==='married' ? 'rings' : family?.relationship_status==='partnered' ? 'partner' : 'parents';
 
   const search = document.getElementById('search');
   const results = document.getElementById('search-results');
@@ -80,20 +88,23 @@
   const familyForChild=id=>originFamilies(id)[0]||null;
   const relationContext=id=>{const ps=parents(id);return ps.length?`${generationText(id)} · ילד/ה של ${ps.map(nameOf).join(' ו־')}`:generationText(id);};
 
-  function makePerson(id, kind, captionText) {
+  const roleText=(id,role)=>{const gender=people.get(id)?.gender;if(role==='spouse')return gender==='male'?'חתן המשפחה':gender==='female'?'כלת המשפחה':'בן/בת זוג';if(role==='founder')return gender==='male'?'מייסד המשפחה':gender==='female'?'מייסדת המשפחה':'ראש המשפחה';return gender==='male'?'בן המשפחה':gender==='female'?'בת המשפחה':'בן/בת המשפחה';};
+  const roleIcon=(id,role)=>role==='spouse'?'rings':people.get(id)?.gender==='male'?'male':people.get(id)?.gender==='female'?'female':'person';
+  function makePerson(id, role, captionText) {
     const person = people.get(id);
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'person' + (id === focusId ? ' focus' : '') + (kind === 'partner' ? ' partner' : '');
-    button.dataset.person = id;
+    const card = document.createElement('div');
+    card.className = 'person' + (id === focusId ? ' focus' : '') + (role === 'spouse' ? ' partner' : '');
+    card.dataset.person = id;
+    const button=document.createElement('button');button.type='button';button.className='person-select';button.setAttribute('aria-label','מעבר אל '+nameOf(id));
     const name = document.createElement('strong');
     name.textContent = nameOf(id);
     const caption = document.createElement('small');
-    caption.textContent = captionText || (id === focusId ? t('focus') : person.deceased ? t('memory') : kind === 'partner' ? t('partner') : generationText(id));
-    button.append(photo(id), name, caption);
-    if (person.deceased) button.append(icon('memorial','memorial-badge'));
+    caption.textContent = captionText || (id === focusId ? t('focus') : person.deceased ? t('memory') : generationText(id));
+    const roleBadge=element('span','person-role',roleText(id,role));roleBadge.prepend(icon(roleIcon(id,role),'person-role-icon'));
+    button.append(roleBadge,name,caption);card.append(photo(id,'tree',true),button);
+    if (person.deceased) card.append(icon('memorial','memorial-badge'));
     button.addEventListener('click', () => select(id));
-    return button;
+    return card;
   }
 
   function element(tag, className, label) {
@@ -105,24 +116,31 @@
 
   function renderTreeBranch(id, visited=new Set()) {
     const branch=element('div','tree-person-branch');
-    if(visited.has(id)){const head=element('div','tree-person-head');head.append(makePerson(id,'relative',generationText(id)));branch.append(head);return branch;}
+    const lineageRole=data.rootIds.includes(id)?'founder':'lineage';
+    if(visited.has(id)){const head=element('div','tree-person-head');head.append(makePerson(id,lineageRole,generationText(id)));branch.append(head);return branch;}
     const nextVisited=new Set([...visited,id]);
-    const units=ownFamilies(id).filter(family=>family.parents.includes(id)).sort((a,b)=>{
+    const allUnits=ownFamilies(id).filter(family=>family.parents.includes(id));
+    const displayPartners=new Set(allUnits.filter(family=>family.parents.length===1&&family.children.length&&family.display_partner_id).map(family=>family.display_partner_id));
+    const units=allUnits.filter(family=>!(family.parents.length===2&&!family.children.length&&displayPartners.has(family.parents.find(value=>value!==id)))).sort((a,b)=>{
       const aName=a.parents.filter(value=>value!==id).map(nameOf).join(' '),bName=b.parents.filter(value=>value!==id).map(nameOf).join(' ');
       return aName.localeCompare(bName,'he');
     });
-    if(!units.length){const head=element('div','tree-person-head');head.append(makePerson(id,'relative',generationText(id)));branch.append(head);return branch;}
+    if(!units.length){const head=element('div','tree-person-head');head.append(makePerson(id,lineageRole,generationText(id)));branch.append(head);return branch;}
     const unitsBox=element('div','tree-person-units');
     for(const family of units){
-      const partnerIds=sort(family.parents.filter(value=>value!==id));
+      const actualPartnerIds=sort(family.parents.filter(value=>value!==id));
+      const partnerIds=actualPartnerIds.length?actualPartnerIds:family.display_partner_id&&people.has(family.display_partner_id)?[family.display_partner_id]:[];
+      const relationshipFamily=partnerIds.length?statusOf(id,partnerIds[0])||family:family;
       if(!partnerIds.length&&!family.children.length)continue;
       const unit=element('section','tree-family-unit');
       const unitTop=element('div','tree-unit-top');
-      unitTop.append(makePerson(id,'relative',generationText(id)));
       if(partnerIds.length){
-        unitTop.append(element('span','tree-relationship-mark','＋'));
-        for(const partnerId of partnerIds)unitTop.append(makePerson(partnerId,'partner',statusText(family)));
-      }else unitTop.append(element('span','tree-single-parent','הורה יחיד/ה'));
+        const couple=element('div','tree-couple-cell relationship-'+(relationshipFamily.relationship_status||'unknown'));
+        couple.append(makePerson(id,lineageRole,generationText(id)));
+        const status=element('div','tree-couple-status');status.append(icon(statusIcon(relationshipFamily),'tree-status-icon'),element('span','',statusText(relationshipFamily)));couple.append(status);
+        for(const partnerId of partnerIds)couple.append(makePerson(partnerId,data.rootIds.includes(partnerId)?'founder':'spouse',generationText(partnerId)));
+        unitTop.append(couple);
+      }else{unitTop.append(makePerson(id,lineageRole,generationText(id)),element('span','tree-single-parent','הורה יחיד/ה'));}
       unit.append(unitTop);
       if(family.children.length){
         const childLabel=element('div','tree-generation-title',generationText(family.children[0]));
@@ -207,7 +225,7 @@
     cardView.replaceChildren();
     cardView.append(navigation());
     const hero = element('div', 'person-hero');
-    hero.append(photo(id, 'hero'), element('span', 'hero-kicker', t('familyOf')), element('h2', '', nameOf(id)));
+    hero.append(photo(id, 'hero', true), element('span', 'hero-kicker', t('familyOf')), element('h2', '', nameOf(id)));
     if (people.get(id).deceased) { const badge=element('span','memory-label',t('memory')); badge.prepend(icon('memorial')); hero.append(badge); }
     const dates=element('div','person-dates');
     dates.append(element('span','',`${t('birth')}: ${formatDate(people.get(id).birth_date)}`));
@@ -236,14 +254,18 @@
     const intro = element('div', 'branches-intro');
     intro.append(element('span', 'hero-kicker', `${generationText(id)} · ${t('fromFamily')}`), element('h2', '', nameOf(id)), element('p', '', t('chooseBranch')));
     branchesView.append(intro);
-    const units=ownFamilies(id).filter(family=>family.parents.includes(id));
+    const allUnits=ownFamilies(id).filter(family=>family.parents.includes(id));
+    const displayPartners=new Set(allUnits.filter(family=>family.parents.length===1&&family.children.length&&family.display_partner_id).map(family=>family.display_partner_id));
+    const units=allUnits.filter(family=>!(family.parents.length===2&&!family.children.length&&displayPartners.has(family.parents.find(value=>value!==id))));
     for(const family of units){
       const familyCard=element('section','branch-family-card');
-      const partnerIds=sort(family.parents.filter(value=>value!==id));
+      const actualPartnerIds=sort(family.parents.filter(value=>value!==id));
+      const partnerIds=actualPartnerIds.length?actualPartnerIds:family.display_partner_id&&people.has(family.display_partner_id)?[family.display_partner_id]:[];
+      const relationshipFamily=partnerIds.length?statusOf(id,partnerIds[0])||family:family;
       const heading=element('div','branch-family-heading');
       const wording=element('div','branch-family-wording');
-      wording.append(element('h3','',family.parents.map(nameOf).join(' ו־')),element('p','',partnerIds.length?statusText(family):'משפחה עם הורה אחד'));
-      heading.append(icon(partnerIds.length?statusIcon(family):'parents','relation-icon'),wording);
+      wording.append(element('h3','',[id,...partnerIds].map(nameOf).join(' ו־')),element('p','',partnerIds.length?statusText(relationshipFamily):'משפחה עם הורה אחד'));
+      heading.append(icon(partnerIds.length?statusIcon(relationshipFamily):'parents','relation-icon'),wording);
       familyCard.append(heading);
       if(family.children.length){
         const label=element('div','branch-generation-label');

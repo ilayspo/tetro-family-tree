@@ -41,13 +41,13 @@
       </div>
       <div class="view-mode-heading"><span data-i18n="viewsLabel">איך להציג את המשפחה?</span></div>
       <div class="view-switch" role="tablist" aria-label="בחירת דרך צפייה במשפחה">
-        <button id="tab-card" class="view-tab" role="tab" aria-selected="true" aria-controls="panel-card" type="button" data-view="card"><span class="tab-glyph" aria-hidden="true">▣</span><span data-i18n="card">כרטיס משפחתי</span></button>
-        <button id="tab-branches" class="view-tab" role="tab" aria-selected="false" aria-controls="panel-branches" type="button" data-view="branches"><span class="tab-glyph" aria-hidden="true">⑂</span><span data-i18n="branches">ענפי המשפחה</span></button>
+        <button id="tab-card" class="view-tab" role="tab" aria-selected="false" aria-controls="panel-card" type="button" data-view="card"><span class="tab-glyph" aria-hidden="true">▣</span><span data-i18n="card">כרטיס משפחתי</span></button>
+        <button id="tab-branches" class="view-tab" role="tab" aria-selected="true" aria-controls="panel-branches" type="button" data-view="branches"><span class="tab-glyph" aria-hidden="true">⑂</span><span data-i18n="branches">ענפי המשפחה</span></button>
         <button id="tab-tree" class="view-tab" role="tab" aria-selected="false" aria-controls="panel-tree" type="button" data-view="tree"><span class="tab-glyph" aria-hidden="true">♧</span><span data-i18n="diagram">תרשים העץ</span></button>
       </div>
       <div class="focus-bar"><span class="focus-label" data-i18n="viewing">מסתכלים על</span><strong id="focus-name">—</strong><span id="focus-info"></span></div>
-      <section id="panel-card" class="view-panel" role="tabpanel" aria-labelledby="tab-card"><div id="card-view" aria-live="polite"></div></section>
-      <section id="panel-branches" class="view-panel" role="tabpanel" aria-labelledby="tab-branches" hidden><div id="branches-view" aria-live="polite"></div></section>
+      <section id="panel-card" class="view-panel" role="tabpanel" aria-labelledby="tab-card" hidden><div id="card-view" aria-live="polite"></div></section>
+      <section id="panel-branches" class="view-panel" role="tabpanel" aria-labelledby="tab-branches"><div id="branches-view" aria-live="polite"></div></section>
       <section id="panel-tree" class="view-panel" role="tabpanel" aria-labelledby="tab-tree" hidden>
         <div class="diagram-toolbar"><p class="hint" data-i18n="hint">לחצו על שם כדי לעבור לענף שלו. אפשר לגלול או להגדיל בתוך התרשים.</p><div class="zoom-controls" role="group" aria-label="זום התרשים"><button id="zoom-out" type="button" aria-label="הקטנה">−</button><output id="zoom-value">100%</output><button id="zoom-in" type="button" aria-label="הגדלה">+</button><button id="zoom-reset" type="button" aria-label="איפוס תצוגה">⤾</button></div></div>
         <div class="tree-scroll" id="tree-scroll" tabindex="0" aria-label="עץ המשפחה, אפשר לגלול לצדדים">

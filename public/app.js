@@ -3,7 +3,7 @@
   if (!data || !Array.isArray(data.people) || !data.people.length) { document.getElementById('person-count').textContent = '—'; document.getElementById('focus-name').textContent = 'הנתונים אינם זמינים כרגע. נסו לרענן את העמוד.'; return; }
 
   const people = new Map(data.people.map(person => [person.id, person]));
-  const labels = { brand:'משפחת טטרו', treeTitle:'עץ המשפחה של משפחת טטרו', story:'הסיפור שלנו, בין הדורות', intro:'מכירים את המשפחה, אדם אחרי אדם.', count:'בני משפחה בעץ', search:'מחפשים מישהו במשפחה?', placeholder:'הקלידו שם פרטי או משפחה', reset:'חזרה לראש העץ', card:'כרטיס משפחתי', branches:'ענפי המשפחה', diagram:'תרשים העץ', viewing:'מסתכלים על', hint:'לחצו על שם כדי לעבור לענף שלו. אפשר לגלול או להגדיל בתוך התרשים.', footer:'מכירים קשר שצריך לתקן? ספרו לעילאי כדי שנעדכן את העץ.', admin:'ניהול', grandparents:'דור הסבים והסבתות', parentsGeneration:'דור ההורים', central:'במרכז המשפחה · קשרים ואחים', childrenGeneration:'דור הילדים', grandchildren:'דור הנכדים', focus:'במרכז העץ', memory:'לזכרו/ה', partner:'קשר הורי/זוגי', explore:'למעבר לענף', viewFamily:'לצפייה במשפחה', familyOf:'המשפחה של', parents:'הורים', partners:'זוגיות והורות משותפת', siblings:'אחים ואחיות', children:'ילדים', noRelations:'אין עדיין קשרים נוספים לאדם הזה בעץ.', back:'→ חזרה אל ', fromFamily:'יוצאים מהמשפחה של', chooseBranch:'בחרו ענף, ואז אדם להמשך המסע.', branchOf:'הענף של ', previous:'הדור הקודם והמשפחה שלו', familyWith:'המשפחה עם ', shared:'בן/בת זוג והילדים המשותפים', next:'הדור הבא', nextDescription:'ילדים והמשך המשפחה', siblingsDescription:'המשפחות שצמחו מאותו דור', noBranches:'אין עדיין ענפים נוספים לאדם הזה בעץ. אפשר לחפש מישהו אחר למעלה.', notFound:'לא מצאנו שם כזה בעץ', zoomIn:'הגדלה', zoomOut:'הקטנה', zoomReset:'איפוס תצוגה', relation:'קשר משפחתי', birth:'נולד/ה', death:'נפטר/ה', notKnown:'לא צוין', current:'קשר נוכחי', past:'קשר קודם', married:'נשואים', partnered:'בני זוג', divorced:'גרושים', separated:'פרודים', former:'קשר קודם', unknown:'סוג קשר לא ידוע', viewsLabel:'איך להציג את המשפחה?' };
+  const labels = { brand:'משפחת טטרו', treeTitle:'עץ המשפחה של משפחת טטרו', story:'הסיפור שלנו, בין הדורות', intro:'מכירים את המשפחה, אדם אחרי אדם.', count:'בני משפחה בעץ', search:'מחפשים מישהו במשפחה?', placeholder:'הקלידו שם פרטי או משפחה', reset:'חזרה לראש העץ', card:'כרטיס משפחתי', branches:'ענפי המשפחה', diagram:'תרשים העץ', viewing:'מסתכלים על', hint:'התרשים מציג את הדורות ביחס לציפורה ומיכאל. אפשר לגלול או להגדיל בתוך התרשים בלבד.', footer:'מכירים קשר שצריך לתקן? ספרו לעילאי כדי שנעדכן את העץ.', admin:'ניהול', focus:'במרכז העץ', memory:'לזכרו/ה', partner:'קשר הורי/זוגי', explore:'למעבר לענף', viewFamily:'לצפייה במשפחה', familyOf:'המשפחה של', parents:'הורים', partners:'זוגיות והורות משותפת', siblings:'אחים ואחיות', children:'ילדים', noRelations:'אין עדיין קשרים נוספים לאדם הזה בעץ.', fromFamily:'הענף המשפחתי של', chooseBranch:'כל זוג מוצג עם הילדים המשותפים שלו. בחרו אדם כדי להמשיך לדור הבא.', shared:'ילדים משותפים', noBranches:'אין לאדם הזה ילדים או ענף נוסף בעץ.', notFound:'לא מצאנו שם כזה בעץ', zoomIn:'הגדלה', zoomOut:'הקטנה', zoomReset:'איפוס תצוגה', relation:'קשר משפחתי', birth:'נולד/ה', death:'נפטר/ה', notKnown:'לא צוין', current:'קשר נוכחי', past:'קשר קודם', married:'נשואים', partnered:'בני זוג', divorced:'גרושים', separated:'פרודים', former:'קשר קודם', unknown:'סוג קשר לא ידוע', viewsLabel:'איך להציג את המשפחה?' };
   const t = key => labels[key];
   const nameOf = id => people.get(id)?.name_he || '';
   const photo = (id, size='small') => {
@@ -46,16 +46,9 @@
   const scroll = document.getElementById('tree-scroll');
   const cardView = document.getElementById('card-view');
   const branchesView = document.getElementById('branches-view');
-  const depth = (id, visited=new Set()) => {
-    if (visited.has(id)) return 0;
-    const next=new Set([...visited,id]);
-    return 1+Math.max(0,...families.filter(f=>f.parents.includes(id)).flatMap(f=>f.children).map(child=>depth(child,next)));
-  };
   const initialId = data.rootIds.find(id => people.has(id)) || data.people[0]?.id;
   let focusId = null;
-  let activeView = 'card';
-  let trail = [];
-  let openBranch = null;
+  let activeView = 'branches';
 
   document.getElementById('person-count').textContent = data.people.length;
 
@@ -67,8 +60,24 @@
   const children = id => unique(ownFamilies(id).flatMap(family => family.children));
   const partners = id => unique(ownFamilies(id).flatMap(family => family.parents.filter(value => value !== id)));
   const siblings = id => sort(originFamilies(id).flatMap(family => family.children.filter(value => value !== id)));
+  const generations = new Map(data.rootIds.filter(id=>people.has(id)).map(id=>[id,0]));
+  for(let pass=0;pass<people.size*2;pass++){
+    let changed=false;
+    for(const family of families){
+      const known=family.parents.map(id=>generations.get(id)).filter(level=>level!==undefined);
+      if(known.length){
+        const level=Math.min(...known);
+        for(const parentId of family.parents)if(!generations.has(parentId)){generations.set(parentId,level);changed=true;}
+        for(const childId of family.children){const next=level+1;if(!generations.has(childId)||generations.get(childId)>next){generations.set(childId,next);changed=true;}}
+      }
+    }
+    if(!changed)break;
+  }
+  const generationText=id=>({0:'דור המייסדים',1:'דור הילדים',2:'דור הנכדים',3:'דור הנינים',4:'דור בני הנינים'}[generations.get(id)]||`דור ${generations.get(id)??'לא ידוע'}`);
+  const familyForChild=id=>originFamilies(id)[0]||null;
+  const relationContext=id=>{const ps=parents(id);return ps.length?`${generationText(id)} · ילד/ה של ${ps.map(nameOf).join(' ו־')}`:generationText(id);};
 
-  function makePerson(id, kind) {
+  function makePerson(id, kind, captionText) {
     const person = people.get(id);
     const button = document.createElement('button');
     button.type = 'button';
@@ -77,87 +86,11 @@
     const name = document.createElement('strong');
     name.textContent = nameOf(id);
     const caption = document.createElement('small');
-    caption.textContent = id === focusId ? t('focus') : person.deceased ? t('memory') : kind === 'partner' ? statusText(statusOf(focusId,id)) : t('explore');
+    caption.textContent = captionText || (id === focusId ? t('focus') : person.deceased ? t('memory') : kind === 'partner' ? t('partner') : generationText(id));
     button.append(photo(id), name, caption);
     if (person.deceased) button.append(icon('memorial','memorial-badge'));
-    button.addEventListener('click', () => select(id, true, true));
+    button.addEventListener('click', () => select(id));
     return button;
-  }
-
-  function addRow(label, ids, partnerIds = []) {
-    if (!ids.length) return;
-    const row = document.createElement('div');
-    row.className = 'generation';
-    const title = document.createElement('span');
-    title.className = 'generation-label';
-    title.textContent = label;
-    const cards = document.createElement('div');
-    cards.className = 'generation-people';
-    for (const id of ids) cards.append(makePerson(id, partnerIds.includes(id) ? 'partner' : 'relative'));
-    row.append(title, cards);
-    tree.append(row);
-  }
-
-  function drawLines() {
-    const old = tree.querySelector('.tree-lines');
-    if (old) old.remove();
-    const width = tree.scrollWidth;
-    const height = tree.scrollHeight;
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('class', 'tree-lines');
-    svg.setAttribute('width', width);
-    svg.setAttribute('height', height);
-    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-    const treeRect = tree.getBoundingClientRect();
-    const positions = new Map();
-    for (const card of tree.querySelectorAll('[data-person]')) {
-      const rect = card.getBoundingClientRect();
-      positions.set(card.dataset.person, {
-        cx: rect.left - treeRect.left + rect.width / 2,
-        top: rect.top - treeRect.top,
-        bottom: rect.bottom - treeRect.top,
-      });
-    }
-    for (const family of families) {
-      for (const parentId of family.parents) {
-        const parent = positions.get(parentId);
-        if (!parent) continue;
-        for (const childId of family.children) {
-          const child = positions.get(childId);
-          if (!child || child.top <= parent.bottom) continue;
-          const mid = (parent.bottom + child.top) / 2;
-          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-          path.setAttribute('d', `M${parent.cx} ${parent.bottom} V${mid} H${child.cx} V${child.top}`);
-          svg.append(path);
-        }
-      }
-    }
-    tree.prepend(svg);
-  }
-
-  function renderTree() {
-    const id = focusId;
-    const directParents = parents(id);
-    const grandparents = sort(directParents.flatMap(parents));
-    const ownPartners = sort(partners(id));
-    const ownSiblings = siblings(id);
-    const ownChildren = sort(children(id));
-    const grandchildren = sort(ownChildren.flatMap(children));
-    const middle = unique([id, ...ownPartners, ...ownSiblings]);
-    tree.replaceChildren();
-    addRow(t('grandparents'), grandparents);
-    addRow(t('parentsGeneration'), directParents);
-    addRow(t('central'), middle, ownPartners);
-    addRow(t('childrenGeneration'), ownChildren);
-    addRow(t('grandchildren'), grandchildren);
-    requestAnimationFrame(() => {
-      tree.style.transform = 'none';
-      drawLines();
-      setZoom(zoom);
-      const card = tree.querySelector('.person.focus');
-      if (card) card.scrollIntoView({ block: 'nearest', inline: 'center' });
-      scroll.scrollTop = 0;
-    });
   }
 
   function element(tag, className, label) {
@@ -167,6 +100,55 @@
     return node;
   }
 
+  function renderTreeBranch(id, visited=new Set()) {
+    const branch=element('div','tree-person-branch');
+    if(visited.has(id)){const head=element('div','tree-person-head');head.append(makePerson(id,'relative',generationText(id)));branch.append(head);return branch;}
+    const nextVisited=new Set([...visited,id]);
+    const units=ownFamilies(id).filter(family=>family.parents.includes(id)).sort((a,b)=>{
+      const aName=a.parents.filter(value=>value!==id).map(nameOf).join(' '),bName=b.parents.filter(value=>value!==id).map(nameOf).join(' ');
+      return aName.localeCompare(bName,'he');
+    });
+    if(!units.length){const head=element('div','tree-person-head');head.append(makePerson(id,'relative',generationText(id)));branch.append(head);return branch;}
+    const unitsBox=element('div','tree-person-units');
+    for(const family of units){
+      const partnerIds=sort(family.parents.filter(value=>value!==id));
+      if(!partnerIds.length&&!family.children.length)continue;
+      const unit=element('section','tree-family-unit');
+      const unitTop=element('div','tree-unit-top');
+      unitTop.append(makePerson(id,'relative',generationText(id)));
+      if(partnerIds.length){
+        unitTop.append(element('span','tree-relationship-mark','＋'));
+        for(const partnerId of partnerIds)unitTop.append(makePerson(partnerId,'partner',statusText(family)));
+      }else unitTop.append(element('span','tree-single-parent','הורה יחיד/ה'));
+      unit.append(unitTop);
+      if(family.children.length){
+        const childLabel=element('div','tree-generation-title',generationText(family.children[0]));
+        const childRow=element('div','tree-branch-children');
+        for(const childId of sort(family.children))childRow.append(renderTreeBranch(childId,nextVisited));
+        unit.append(childLabel,childRow);
+      }
+      unitsBox.append(unit);
+    }
+    if(unitsBox.children.length)branch.append(unitsBox);
+    return branch;
+  }
+
+  function renderTree() {
+    tree.replaceChildren();
+    const root=data.rootIds.find(id=>people.has(id))||initialId;
+    const full=element('div','family-tree-root');
+    full.append(renderTreeBranch(root));
+    tree.append(full);
+    requestAnimationFrame(()=>{
+      tree.style.transform='none';
+      setZoom(zoom);
+      const cards=[...tree.querySelectorAll('.person')];
+      const card=cards.find(node=>node.dataset.person===focusId);
+      if(card)card.scrollIntoView({block:'nearest',inline:'center'});
+      scroll.scrollTop=0;
+    });
+  }
+
   function personButton(id, subtitle) {
     const button = element('button', 'relative-card');
     button.type = 'button';
@@ -174,7 +156,7 @@
     const meta = element('span', 'relative-meta', subtitle || (people.get(id).deceased ? t('memory') : t('viewFamily')));
     button.append(photo(id), name, meta, element('span', 'relative-arrow', '←'));
     if (people.get(id).deceased) button.append(icon('memorial','memorial-badge'));
-    button.addEventListener('click', () => select(id, true, true));
+    button.addEventListener('click', () => select(id));
     return button;
   }
 
@@ -190,19 +172,29 @@
     return box;
   }
 
+  function parentPath(id,seen=new Set()){
+    if(seen.has(id))return null;
+    if(data.rootIds.includes(id))return [id];
+    const nextSeen=new Set([...seen,id]);
+    for(const parentId of sort(parents(id))){const path=parentPath(parentId,nextSeen);if(path)return [...path,id];}
+    return null;
+  }
+  function ancestryPath(id){
+    const direct=parentPath(id);if(direct)return direct;
+    for(const partnerId of sort(partners(id))){const path=parentPath(partnerId);if(path)return [...path,id];}
+    return null;
+  }
+
   function navigation() {
-    const wrap = element('div', 'person-navigation');
-    if (trail.length > 1) {
-      const back = element('button', 'back-person', t('back') + nameOf(trail[trail.length - 2]));
-      back.type = 'button';
-      back.addEventListener('click', () => {
-        trail.pop();
-        focusId = trail[trail.length - 1];
-        openBranch = null;
-        history.replaceState(null, '', '#' + encodeURIComponent(focusId));
-        render();
-      });
-      wrap.append(back);
+    const wrap=element('nav','person-navigation');
+    wrap.setAttribute('aria-label','המסלול המשפחתי');
+    const path=ancestryPath(focusId)||[focusId];
+    const rootIds=data.rootIds.filter(id=>people.has(id));
+    const root=element('button','path-crumb',rootIds.map(nameOf).join(' ו־'));
+    root.type='button';root.disabled=rootIds.includes(focusId);root.addEventListener('click',()=>select(initialId));wrap.append(root);
+    for(const id of path.filter(id=>!rootIds.includes(id))){
+      wrap.append(element('span','path-separator','←'));
+      const crumb=element('button','path-crumb',nameOf(id));crumb.type='button';crumb.disabled=id===focusId;crumb.addEventListener('click',()=>select(id));wrap.append(crumb);
     }
     return wrap;
   }
@@ -234,52 +226,39 @@
     cardView.append(relations);
   }
 
-  function addBranch(key, title, description, ids, label) {
-    if (!ids.length) return;
-    const folder = element('div', 'branch-folder');
-    const trigger = element('button', 'branch-trigger');
-    trigger.type = 'button';
-    trigger.setAttribute('aria-expanded', String(openBranch === key));
-    const symbol = element('span', 'folder-symbol', '▤');
-    symbol.setAttribute('aria-hidden', 'true');
-    trigger.append(symbol);
-    const wording = element('span', 'branch-wording');
-    wording.append(element('strong', '', title), element('small', '', description));
-    trigger.append(wording, element('span', 'folder-count', String(ids.length)), element('span', 'folder-chevron', openBranch === key ? '⌃' : '⌄'));
-    trigger.addEventListener('click', () => { openBranch = openBranch === key ? null : key; renderBranches(); });
-    folder.append(trigger);
-    if (openBranch === key) {
-      const list = element('div', 'branch-contents');
-      for (const id of ids) list.append(personButton(id, label));
-      folder.append(list);
-    }
-    branchesView.append(folder);
-  }
-
   function renderBranches() {
     const id = focusId;
     branchesView.replaceChildren();
     branchesView.append(navigation());
     const intro = element('div', 'branches-intro');
-    intro.append(element('span', 'hero-kicker', t('fromFamily')), element('h2', '', nameOf(id)), element('p', '', t('chooseBranch')));
+    intro.append(element('span', 'hero-kicker', `${generationText(id)} · ${t('fromFamily')}`), element('h2', '', nameOf(id)), element('p', '', t('chooseBranch')));
     branchesView.append(intro);
-    const directParents = parents(id);
-    for (const parentId of directParents) {
-      const next = sort(unique([parentId, ...parents(parentId), ...siblings(parentId)]));
-      addBranch('parent-' + parentId, t('branchOf') + nameOf(parentId), t('previous'), next);
+    const units=ownFamilies(id).filter(family=>family.parents.includes(id));
+    for(const family of units){
+      const familyCard=element('section','branch-family-card');
+      const partnerIds=sort(family.parents.filter(value=>value!==id));
+      const heading=element('div','branch-family-heading');
+      const wording=element('div','branch-family-wording');
+      wording.append(element('h3','',family.parents.map(nameOf).join(' ו־')),element('p','',partnerIds.length?statusText(family):'משפחה עם הורה אחד'));
+      heading.append(icon(partnerIds.length?statusIcon(family):'parents','relation-icon'),wording);
+      familyCard.append(heading);
+      if(family.children.length){
+        const label=element('div','branch-generation-label');
+        label.append(element('strong','',generationText(family.children[0])),element('span','',`${family.children.length} ${family.children.length===1?'ילד/ה':'ילדים'} בענף`));
+        const list=element('div','branch-child-list');
+        for(const childId of sort(family.children))list.append(personButton(childId,relationContext(childId)));
+        familyCard.append(label,list);
+      }else familyCard.append(element('p','branch-empty','אין ילדים שמשויכים לקשר הזה.'));
+      branchesView.append(familyCard);
     }
-    const partnerIds = sort(partners(id));
-    for (const partnerId of partnerIds) {
-      const next = sort(unique([partnerId, ...children(id).filter(childId => ownFamilies(id).some(family => family.parents.includes(partnerId) && family.children.includes(childId)))]));
-      addBranch('partner-' + partnerId, t('familyWith') + nameOf(partnerId), statusText(statusOf(id,partnerId)) + ' · ' + t('shared'), next, statusText(statusOf(id,partnerId)));
+    const ownSiblings=siblings(id);
+    if(ownSiblings.length){
+      const parallel=element('section','parallel-branches');
+      const heading=element('div','relation-heading');heading.append(icon('siblings','relation-icon'),element('h3','','ענפים מקבילים באותו דור'),element('span','relation-count',String(ownSiblings.length)));
+      const list=element('div','branch-child-list');for(const siblingId of ownSiblings)list.append(personButton(siblingId,relationContext(siblingId)));
+      parallel.append(heading,list);branchesView.append(parallel);
     }
-    const ownChildren = sort(children(id));
-    const listedChildren = new Set(ownFamilies(id).filter(family => family.parents.some(parentId => partnerIds.includes(parentId))).flatMap(family => family.children));
-    const otherChildren = ownChildren.filter(childId => !listedChildren.has(childId));
-    if (otherChildren.length) addBranch('children', t('next'), t('nextDescription'), otherChildren);
-    const ownSiblings = siblings(id);
-    addBranch('siblings', t('siblings'), t('siblingsDescription'), ownSiblings);
-    if (!branchesView.querySelector('.branch-folder')) branchesView.append(element('p', 'no-relations', t('noBranches')));
+    if(!units.length&&!ownSiblings.length)branchesView.append(element('p','no-relations',t('noBranches')));
   }
 
   function render() {
@@ -290,7 +269,7 @@
     if (activeView === 'tree') renderTree();
   }
 
-  function setView(view) {
+  function setView(view, updateState=true) {
     activeView = view;
     for (const button of document.querySelectorAll('.view-tab')) {
       const selected = button.dataset.view === view;
@@ -298,6 +277,7 @@
       document.getElementById('panel-' + button.dataset.view).hidden = !selected;
     }
     render();
+    if(updateState&&focusId)history.replaceState({personId:focusId,view:activeView,fromTree:true},'',location.hash||'#'+encodeURIComponent(focusId));
   }
 
   function hideResults() {
@@ -305,18 +285,13 @@
     search.setAttribute('aria-expanded', 'false');
   }
 
-  function select(id, updateHash = true, remember = false) {
+  function select(id, updateHistory = true) {
     if (!people.has(id)) return;
     focusId = id;
-    if (remember) {
-      const existing = trail.indexOf(id);
-      trail = existing >= 0 ? trail.slice(0, existing + 1) : [...trail, id];
-    } else trail = [id];
-    openBranch = null;
     search.value = '';
     hideResults();
     render();
-    if (updateHash) history.replaceState(null, '', '#' + encodeURIComponent(id));
+    if(updateHistory)history.pushState({personId:id,view:activeView,fromTree:true},'','#'+encodeURIComponent(id));
   }
 
   function updateResults() {
@@ -384,8 +359,17 @@
   document.addEventListener('click', event => { if (!event.target.closest('.search-wrap')) hideResults(); });
   for (const button of document.querySelectorAll('.view-tab')) button.addEventListener('click', () => setView(button.dataset.view));
   document.getElementById('reset').addEventListener('click', () => select(initialId));
-  window.addEventListener('resize', () => { if (activeView === 'tree') drawLines(); });
-  window.addEventListener('hashchange', () => select(decodeURIComponent(location.hash.slice(1)), false));
-  select(people.has(decodeURIComponent(location.hash.slice(1))) ? decodeURIComponent(location.hash.slice(1)) : initialId, false);
+  window.addEventListener('resize', () => { if (activeView === 'tree') setZoom(zoom); });
+  window.addEventListener('popstate', event => {
+    const id=event.state?.personId||decodeURIComponent(location.hash.slice(1));
+    if(!people.has(id))return;
+    focusId=id;
+    if(['card','branches','tree'].includes(event.state?.view))activeView=event.state.view;
+    for(const button of document.querySelectorAll('.view-tab')){const selected=button.dataset.view===activeView;button.setAttribute('aria-selected',String(selected));document.getElementById('panel-'+button.dataset.view).hidden=!selected;}
+    render();
+  });
+  const startId=people.has(decodeURIComponent(location.hash.slice(1)))?decodeURIComponent(location.hash.slice(1)):initialId;
+  focusId=startId;
+  history.replaceState({personId:startId,view:activeView,fromTree:true},'','#'+encodeURIComponent(startId));
   applyLabels();
 })();

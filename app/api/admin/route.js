@@ -19,7 +19,7 @@ export async function GET(){try{await requireAdmin();const [p,u,m,a,g,i,audit,se
 export async function POST(req){try{const admin=await requireAdmin();if(new URL(req.headers.get('origin')||req.url).host!==new URL(req.url).host)throw Object.assign(new Error('בקשה ממקור לא מורשה.'),{status:403});const body=await req.json();
  if(body.action==='set_family_code'){
   const code=typeof body.code==='string'?body.code.trim():'';
-  if(code.length<10||code.length>100)throw Object.assign(new Error('הקוד המשפחתי צריך להכיל לפחות 10 תווים.'),{status:400});
+  if(code.length<4||code.length>100)throw Object.assign(new Error('הקוד המשפחתי צריך להכיל לפחות 4 תווים.'),{status:400});
   await query('insert into family_settings(singleton,access_code_hash,access_code_updated_at,updated_at) values(true,$1,now(),now()) on conflict(singleton) do update set access_code_hash=excluded.access_code_hash,access_version=family_settings.access_version+1,access_code_updated_at=now(),updated_at=now()',[hashFamilyCode(code)]);
   return Response.json({ok:true},{headers:{'Cache-Control':'no-store'}});
  }

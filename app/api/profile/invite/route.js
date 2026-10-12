@@ -6,7 +6,7 @@ const fail=error=>{if(!error.status||error.status>=500)console.error(error);retu
 const sameOrigin=request=>{const origin=request.headers.get('origin');return !origin||new URL(origin).host===new URL(request.url).host;};
 
 export async function GET(request){
- try{const token=new URL(request.url).searchParams.get('token');const invite=await invitationByToken(token);return Response.json({name:invite.name_he,email:maskEmail(invite.email),expiresAt:invite.expires_at},{headers:{'Cache-Control':'no-store'}});}catch(error){return fail(error);}
+ try{const token=new URL(request.url).searchParams.get('token');const invite=await invitationByToken(token);return Response.json({name:invite.name_he,tree:invite.tree_slug,treeName:invite.tree_name,email:maskEmail(invite.email),expiresAt:invite.expires_at},{headers:{'Cache-Control':'no-store'}});}catch(error){return fail(error);}
 }
 
 export async function POST(request){

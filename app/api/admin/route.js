@@ -4,7 +4,7 @@ import { action } from '../../../lib/family';
 import { remove } from '../../../lib/storage';
 import {createInvitation,setGuardianGrant} from '../../../lib/members';
 import {queueNotification,deliverNotification} from '../../../lib/notifications';
-import {hashFamilyCode} from '../../../lib/family-access';
+import {hashFamilyCode,verifyFamilyCode} from '../../../lib/family-access';
 import {listTrees,requestedTreeSlug,treeBySlug} from '../../../lib/trees';
 export const dynamic='force-dynamic';
 const fail=e=>{if(!e.status||e.status>=500)console.error(e);return Response.json({error:e.status?e.message:'אירעה שגיאה בשמירה. נסו שוב.'},{status:e.status||500,headers:{'Cache-Control':'no-store'}});};
@@ -33,6 +33,8 @@ export async function POST(req){try{const admin=await requireAdmin();if(new URL(
  if(body.action==='set_family_code'){
   const code=typeof body.code==='string'?body.code.trim():'';
   if(code.length<4||code.length>100)throw Object.assign(new Error('הקוד המשפחתי צריך להכיל לפחות 4 תווים.'),{status:400});
+  const otherCodes=await query('select access_code_hash from tree_settings where tree_id<>$1 and access_code_hash is not null',[tree.id]);
+  if(otherCodes.rows.some(row=>verifyFamilyCode(code,row.access_code_hash)))throw Object.assign(new Error('הקוד הזה כבר משמש עץ משפחה אחר. יש לבחור קוד שונה.'),{status:409});
   await query('insert into tree_settings(tree_id,access_code_hash,access_code_updated_at,updated_at) values($1,$2,now(),now()) on conflict(tree_id) do update set access_code_hash=excluded.access_code_hash,access_version=tree_settings.access_version+1,access_code_updated_at=now(),updated_at=now()',[tree.id,hashFamilyCode(code)]);
   return Response.json({ok:true},{headers:{'Cache-Control':'no-store'}});
  }

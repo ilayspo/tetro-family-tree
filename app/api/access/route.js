@@ -7,7 +7,7 @@ const headers={'Cache-Control':'no-store'};
 const sameOrigin=req=>{const origin=req.headers.get('origin');return !origin||new URL(origin).host===new URL(req.url).host;};
 
 export async function GET(){
- try{const [trees,grants]=await Promise.all([listTrees(),familyGrants()]);return Response.json({trees:trees.map(tree=>({...tree,hasAccess:Number.isInteger(grants[tree.id])}))},{headers});}
+ try{const [trees,grants]=await Promise.all([listTrees(),familyGrants()]);return Response.json({trees:trees.map(({people_count,...tree})=>({...tree,hasAccess:Number.isInteger(grants[tree.id])}))},{headers});}
  catch(error){console.error(error);return Response.json({error:'לא ניתן לטעון את רשימת העצים.'},{status:500,headers});}
 }
 

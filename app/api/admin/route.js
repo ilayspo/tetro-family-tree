@@ -37,7 +37,7 @@ export async function POST(req){try{const admin=await requireAdmin();if(new URL(
   return Response.json({ok:true},{headers:{'Cache-Control':'no-store'}});
  }
  if(body.action==='create_invite'){
-  const invitation=await createInvitation({treeId:tree.id,personId:body.personId,email:body.email,adminUserId:admin.id,origin:new URL(req.url).origin});
+  const invitation=await createInvitation({treeId:tree.id,personId:body.personId,email:body.email,adminUserId:admin.id,origin:process.env.PUBLIC_SITE_URL||new URL(req.url).origin});
   const notificationId=await queueNotification({query},{treeId:tree.id,recipient:invitation.email,subject:`הזמנה לעריכת הפרופיל של ${invitation.person.name_he}`,lines:[`הוזמנת לערוך את הפרופיל המשפחתי של ${invitation.person.name_he}.`,`הקישור תקף לשבעה ימים: ${invitation.url}`]});
   const delivery=await deliverNotification(notificationId);
   return Response.json({ok:true,inviteUrl:invitation.url,expiresAt:invitation.invite.expires_at,emailSent:delivery.sent},{headers:{'Cache-Control':'no-store'}});
